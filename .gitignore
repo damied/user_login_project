@@ -1,0 +1,13 @@
+# Node
+node_project/node_modules/
+node_project/.env
+node_project/npm-debug.log
+
+# Python
+flask_project/venv/
+flask_project/__pycache__/
+flask_project/*.pyc
+flask_project/.env
+
+# OS
+.DS_Store

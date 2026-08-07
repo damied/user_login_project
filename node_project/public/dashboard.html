@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KDT Resource — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-deep:  #0F6E56;
+      --green-mid:   #1D9E75;
+      --green-light: #5DCAA5;
+      --green-pale:  #EAF3DE;
+      --green-ink:   #173404;
+      --green-sub:   #3B6D11;
+      --off-white:   #F7FAF2;
+      --border:      #C9E2B8;
+      --text-muted:  #7A9469;
+      --card-bg:     #FFFFFF;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--off-white);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--green-ink);
+    }
+
+    /* bg grid */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(29,158,117,.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      z-index: 0;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(247,250,242,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1.5px solid var(--border);
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .topbar-logo svg { width: 130px; height: auto; }
+
+    .topbar-right {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .user-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--green-pale);
+      border: 1.5px solid var(--border);
+      border-radius: 50px; padding: 6px 16px 6px 8px;
+    }
+    .user-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-deep), var(--green-light));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: .85rem;
+      color: #fff; font-weight: 700; flex-shrink: 0;
+    }
+    .user-name {
+      font-family: 'DM Mono', monospace; font-size: .78rem;
+      color: var(--green-sub); letter-spacing: .04em;
+    }
+    .btn-logout {
+      background: none; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 7px 14px; cursor: pointer;
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      letter-spacing: .08em; color: var(--text-muted);
+      transition: all .2s;
+    }
+    .btn-logout:hover {
+      border-color: #C0392B; color: #C0392B;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      position: relative; z-index: 1;
+      max-width: 1000px; margin: 0 auto;
+      padding: 40px 24px 60px;
+      animation: rise .6s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* greeting */
+    .greeting {
+      margin-bottom: 36px;
+    }
+    .greeting-sub {
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--green-mid); margin-bottom: 6px;
+    }
+    .greeting h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2rem; font-weight: 700; color: var(--green-ink);
+      line-height: 1.2;
+    }
+    .greeting h1 span { color: var(--green-mid); }
+    .greeting p {
+      margin-top: 8px; font-size: .9rem; color: var(--text-muted);
+    }
+
+    /* ── STAT CARDS ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 22px 24px;
+      box-shadow: 0 4px 18px rgba(15,110,86,.06);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(15,110,86,.12);
+    }
+    .stat-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--green-pale);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .stat-icon svg { width: 18px; height: 18px; color: var(--green-mid); }
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 700; color: var(--green-ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace; font-size: .7rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--text-muted); margin-top: 4px;
+    }
+
+    /* ── PANELS ── */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 640px) { .panels { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 24px;
+      box-shadow: 0 4px 18px rgba(15,110,86,.06);
+    }
+    .panel-title {
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--green-sub); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Account info */
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: .88rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key {
+      font-family: 'DM Mono', monospace; font-size: .72rem;
+      letter-spacing: .08em; color: var(--text-muted); text-transform: uppercase;
+    }
+    .info-val { color: var(--green-ink); font-weight: 500; }
+    .badge {
+      background: var(--green-pale); color: var(--green-deep);
+      font-family: 'DM Mono', monospace; font-size: .68rem;
+      letter-spacing: .08em; padding: 3px 10px; border-radius: 50px;
+      border: 1px solid var(--border);
+    }
+
+    /* Activity list */
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green-light); margin-top: 5px; flex-shrink: 0;
+    }
+    .activity-text { font-size: .87rem; color: var(--green-ink); }
+    .activity-time {
+      font-family: 'DM Mono', monospace; font-size: .68rem;
+      color: var(--text-muted); margin-top: 2px; letter-spacing: .04em;
+    }
+
+    /* welcome banner */
+    .banner {
+      background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+      border-radius: 16px; padding: 28px 32px;
+      margin-bottom: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+      box-shadow: 0 8px 32px rgba(15,110,86,.22);
+      position: relative; overflow: hidden;
+    }
+    .banner::before {
+      content: '';
+      position: absolute; right: -40px; top: -40px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+    .banner-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 700; color: #fff;
+    }
+    .banner-text p {
+      font-size: .85rem; color: rgba(255,255,255,.75); margin-top: 4px;
+    }
+    .banner-icon svg {
+      width: 48px; height: 48px; color: rgba(255,255,255,.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+        <rect x="100" y="30" width="480" height="300" rx="18" fill="#EAF3DE"/>
+        <rect x="152" y="95" width="13" height="130" rx="2" fill="#1D9E75"/>
+        <polygon points="165,95 165,160 217,95 233,95 181,160 165,160" fill="#1D9E75"/>
+        <polygon points="165,160 165,225 181,160 233,225 217,225" fill="#0F6E56"/>
+        <polygon points="181,160 199,147 199,173" fill="#5DCAA5" opacity="0.75"/>
+        <text x="256" y="145" font-family="Georgia, serif" font-size="52" font-weight="700" dominant-baseline="middle" fill="#173404">kdt</text>
+        <rect x="256" y="172" width="270" height="1.5" rx="1" fill="#1D9E75" opacity="0.3"/>
+        <text x="258" y="194" font-family="'Courier New', monospace" font-size="15.5" letter-spacing="5" dominant-baseline="middle" fill="#3B6D11">resource</text>
+        <text x="258" y="233" font-family="Georgia, serif" font-size="13.5" font-style="italic" dominant-baseline="middle" fill="#0F6E56">Powering Your Digital World</text>
+        <circle cx="248" cy="233" r="3" fill="#5DCAA5" opacity="0.85"/>
+      </svg>
+    </div>
+    <div class="topbar-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="avatar-initial">?</div>
+        <span class="user-name" id="topbar-username">loading...</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">LOG OUT</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Greeting -->
+    <div class="greeting">
+      <div class="greeting-sub">Dashboard</div>
+      <h1>Welcome back, <span id="greet-name">—</span> 👋</h1>
+      <p>Here's what's happening with your KDT Resource account today.</p>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+      <div class="banner-text">
+        <h2>You're all set!</h2>
+        <p>Your account is active and connected to KDT Resource. Start exploring.</p>
+      </div>
+      <div class="banner-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="stat-value">1</div>
+        <div class="stat-label">Active Account</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        </div>
+        <div class="stat-value" id="stat-email">—</div>
+        <div class="stat-label">Email Verified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="stat-value">✓</div>
+        <div class="stat-label">Secure Login</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="stat-value" id="stat-joined">—</div>
+        <div class="stat-label">Member Since</div>
+      </div>
+    </div>
+
+    <!-- Panels -->
+    <div class="panels">
+      <!-- Account Info -->
+      <div class="panel">
+        <div class="panel-title">Account Info</div>
+        <div class="info-row">
+          <span class="info-key">Username</span>
+          <span class="info-val" id="info-username">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Email</span>
+          <span class="info-val" id="info-email">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">User ID</span>
+          <span class="info-val" id="info-id" style="font-family:'DM Mono',monospace;font-size:.72rem;">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Status</span>
+          <span class="badge">Active</span>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="panel">
+        <div class="panel-title">Recent Activity</div>
+        <div class="activity-item">
+          <div class="activity-dot"></div>
+          <div>
+            <div class="activity-text">Signed in successfully</div>
+            <div class="activity-time" id="login-time">just now</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background:var(--green-mid)"></div>
+          <div>
+            <div class="activity-text">Account created</div>
+            <div class="activity-time" id="created-time">—</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background:var(--border)"></div>
+          <div>
+            <div class="activity-text" style="color:var(--text-muted)">No other activity yet</div>
+            <div class="activity-time">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ── Guard: redirect to login if no token ──
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/';
+
+    // ── Load user data from /api/auth/me ──
+    async function loadUser() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!res.ok) { logout(); return; }
+        const user = await res.json();
+
+        // Populate all fields
+        document.getElementById('greet-name').textContent     = user.username;
+        document.getElementById('topbar-username').textContent = user.username;
+        document.getElementById('avatar-initial').textContent  = user.username.charAt(0).toUpperCase();
+        document.getElementById('info-username').textContent   = user.username;
+        document.getElementById('info-email').textContent      = user.email;
+        document.getElementById('info-id').textContent         = user._id;
+        document.getElementById('stat-email').textContent      = user.email.split('@')[0];
+
+        if (user.createdAt) {
+          const d = new Date(user.createdAt);
+          const fmt = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+          document.getElementById('stat-joined').textContent  = d.toLocaleDateString('en-GB', { month:'short', year:'numeric' });
+          document.getElementById('created-time').textContent = fmt;
+        }
+
+        document.getElementById('login-time').textContent =
+          new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    }
+
+    loadUser();
+  </script>
+</body>
+</html>

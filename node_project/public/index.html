@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KDT Resource — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-deep:   #0F6E56;
+      --green-mid:    #1D9E75;
+      --green-light:  #5DCAA5;
+      --green-pale:   #EAF3DE;
+      --green-ink:    #173404;
+      --green-sub:    #3B6D11;
+      --off-white:    #F7FAF2;
+      --card-bg:      #FFFFFF;
+      --border:       #C9E2B8;
+      --text-muted:   #7A9469;
+      --error:        #C0392B;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--off-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative background blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    body::before {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(29,158,117,.18) 0%, transparent 70%);
+      top: -140px; left: -140px;
+    }
+    body::after {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(93,202,165,.14) 0%, transparent 70%);
+      bottom: -120px; right: -80px;
+    }
+
+    /* Subtle dot-grid */
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(29,158,117,.15) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0;
+      animation: rise .65s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── LOGO PANEL ── */
+    .logo-panel {
+      background: var(--green-pale);
+      border: 1.5px solid var(--border);
+      border-bottom: none;
+      border-radius: 22px 22px 0 0;
+      padding: 18px 40px 14px;
+      display: flex; align-items: center; justify-content: center;
+      width: 440px;
+    }
+    .logo-panel svg { width: 220px; height: auto; }
+
+    /* ── CARD ── */
+    .card {
+      width: 440px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 0 0 22px 22px;
+      padding: 36px 40px 40px;
+      box-shadow: 0 12px 48px rgba(15,110,86,.10), 0 2px 8px rgba(15,110,86,.06);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1; padding: 10px 0;
+      background: none; border: none; cursor: pointer;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--text-muted);
+      position: relative; transition: color .2s;
+      letter-spacing: .01em;
+    }
+    .tab::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 2.5px; background: var(--green-mid);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .28s cubic-bezier(.22,1,.36,1);
+    }
+    .tab.active { color: var(--green-deep); }
+    .tab.active::after { transform: scaleX(1); }
+
+    /* Form label + field */
+    .field { margin-bottom: 18px; }
+    label {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--green-sub); margin-bottom: 6px; font-weight: 400;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap svg.icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; color: var(--green-light);
+      pointer-events: none; transition: color .2s;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%; padding: 12px 14px 12px 40px;
+      background: var(--green-pale); border: 1.5px solid var(--border);
+      border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; color: var(--green-ink);
+      outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    input::placeholder { color: var(--text-muted); }
+    input:focus {
+      border-color: var(--green-mid);
+      background: #fff;
+      box-shadow: 0 0 0 3.5px rgba(29,158,117,.15);
+    }
+    input:focus + .icon, .input-wrap:focus-within svg.icon {
+      color: var(--green-mid);
+    }
+    /* toggle password */
+    .eye-btn {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); padding: 2px; transition: color .2s;
+    }
+    .eye-btn:hover { color: var(--green-mid); }
+
+    /* Password strength */
+    .strength-bar {
+      display: flex; gap: 4px; margin-top: 7px;
+    }
+    .strength-seg {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: var(--border); transition: background .3s;
+    }
+    .strength-label {
+      font-size: .7rem; font-family: 'DM Mono', monospace;
+      color: var(--text-muted); margin-top: 4px; letter-spacing: .06em;
+      min-height: 1em;
+    }
+
+    /* Error */
+    .field-error {
+      font-size: .72rem; color: var(--error);
+      margin-top: 4px; font-family: 'DM Mono', monospace;
+      display: none;
+    }
+    input.invalid { border-color: var(--error); }
+    input.invalid:focus { box-shadow: 0 0 0 3px rgba(192,57,43,.13); }
+    .field.has-error .field-error { display: block; }
+
+    /* CTA Button */
+    .btn-primary {
+      width: 100%; margin-top: 8px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.05rem; font-weight: 700; letter-spacing: .02em;
+      color: #fff;
+      position: relative; overflow: hidden;
+      transition: transform .18s, box-shadow .18s;
+      box-shadow: 0 4px 18px rgba(15,110,86,.22);
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, transparent 60%);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(15,110,86,.30);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary.loading {
+      pointer-events: none; opacity: .8;
+    }
+    .btn-primary .btn-text { position: relative; z-index: 1; }
+    .btn-primary .spinner {
+      display: none; width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite;
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%,-50%); z-index: 2;
+    }
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .btn-primary.loading .btn-text { opacity: 0; }
+    .btn-primary.loading .spinner { display: block; }
+
+    /* Footer link */
+    .form-footer {
+      margin-top: 20px; text-align: center;
+      font-size: .83rem; color: var(--text-muted);
+    }
+    .form-footer a {
+      color: var(--green-mid); text-decoration: none;
+      font-weight: 500; cursor: pointer;
+    }
+    .form-footer a:hover { text-decoration: underline; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--green-deep); color: #fff;
+      padding: 12px 28px; border-radius: 50px;
+      font-family: 'DM Mono', monospace; font-size: .82rem; letter-spacing: .06em;
+      box-shadow: 0 6px 24px rgba(15,110,86,.35);
+      opacity: 0; transition: opacity .3s, transform .4s cubic-bezier(.22,1,.36,1);
+      pointer-events: none; z-index: 99; white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+    .toast.error { background: var(--error); }
+
+    /* Panel switch animation */
+    .form-panel { transition: opacity .2s, transform .2s; }
+    .form-panel.hidden { display: none; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 18px 0;
+    }
+    .divider span {
+      font-size: .72rem; color: var(--text-muted);
+      font-family: 'DM Mono', monospace; letter-spacing: .08em; white-space: nowrap;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Checkbox */
+    .check-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 4px;
+    }
+    .check-row input[type="checkbox"] {
+      width: 16px; height: 16px; margin-top: 2px;
+      accent-color: var(--green-mid); flex-shrink: 0;
+    }
+    .check-row label {
+      font-size: .8rem; text-transform: none; letter-spacing: 0;
+      font-family: 'DM Sans', sans-serif; color: var(--text-muted); cursor: pointer;
+    }
+    .check-row label a { color: var(--green-mid); }
+
+    /* ── BACKEND NOTE PANEL ── */
+    .backend-note {
+      width: 440px;
+      margin-top: 22px;
+      background: rgba(234,243,222,.7);
+      border: 1.5px dashed var(--border);
+      border-radius: 14px;
+      padding: 18px 22px;
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem; color: var(--green-sub);
+      line-height: 1.7; letter-spacing: .02em;
+      backdrop-filter: blur(4px);
+    }
+    .backend-note strong {
+      color: var(--green-deep); font-weight: 400; display: block; margin-bottom: 6px;
+      font-size: .78rem; letter-spacing: .08em;
+    }
+    .backend-note code {
+      background: rgba(29,158,117,.12); padding: 1px 6px; border-radius: 4px;
+      font-size: .71rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="wrapper">
+
+    <!-- Logo panel -->
+    <div class="logo-panel">
+      <svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+        <rect x="100" y="30" width="480" height="300" rx="18" fill="#EAF3DE"/>
+        <rect x="152" y="95" width="13" height="130" rx="2" fill="#1D9E75"/>
+        <polygon points="165,95 165,160 217,95 233,95 181,160 165,160" fill="#1D9E75"/>
+        <polygon points="165,160 165,225 181,160 233,225 217,225" fill="#0F6E56"/>
+        <polygon points="181,160 199,147 199,173" fill="#5DCAA5" opacity="0.75"/>
+        <text x="256" y="145" font-family="Georgia, serif" font-size="52" font-weight="700" dominant-baseline="middle" fill="#173404">kdt</text>
+        <rect x="256" y="172" width="270" height="1.5" rx="1" fill="#1D9E75" opacity="0.3"/>
+        <text x="258" y="194" font-family="'Courier New', monospace" font-size="15.5" letter-spacing="5" dominant-baseline="middle" fill="#3B6D11">resource</text>
+        <text x="258" y="233" font-family="Georgia, serif" font-size="13.5" font-style="italic" dominant-baseline="middle" fill="#0F6E56">Powering Your Digital World</text>
+        <circle cx="248" cy="233" r="3" fill="#5DCAA5" opacity="0.85"/>
+      </svg>
+    </div>
+
+    <!-- Auth card -->
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" data-tab="register" onclick="switchTab('register')">Create Account</button>
+        <button class="tab" data-tab="login" onclick="switchTab('login')">Sign In</button>
+      </div>
+
+      <!-- ── REGISTER PANEL ── -->
+      <div class="form-panel" id="panel-register">
+        <div class="field" id="field-username">
+          <label for="reg-username">Username</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input type="text" id="reg-username" placeholder="e.g. johndoe" autocomplete="username"/>
+          </div>
+          <div class="field-error" id="err-username">Username must be 3+ characters.</div>
+        </div>
+
+        <div class="field" id="field-email">
+          <label for="reg-email">Email Address</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+            <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="field-error" id="err-email">Please enter a valid email.</div>
+        </div>
+
+        <div class="field" id="field-password">
+          <label for="reg-password">Password</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="reg-password" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('reg-password', this)" aria-label="Toggle password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="s1"></div>
+            <div class="strength-seg" id="s2"></div>
+            <div class="strength-seg" id="s3"></div>
+            <div class="strength-seg" id="s4"></div>
+          </div>
+          <div class="strength-label" id="strength-label"></div>
+          <div class="field-error" id="err-password">Password must be at least 8 characters.</div>
+        </div>
+
+        <div class="check-row">
+          <input type="checkbox" id="agree"/>
+          <label for="agree">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button class="btn-primary" id="btn-register" onclick="handleRegister()">
+          <span class="btn-text">Create Account</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="form-footer">
+          Already have an account? <a onclick="switchTab('login')">Sign in here</a>
+        </div>
+      </div>
+
+      <!-- ── LOGIN PANEL ── -->
+      <div class="form-panel hidden" id="panel-login">
+        <div class="field" id="field-login-email">
+          <label for="login-email">Email Address</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+            <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+        </div>
+
+        <div class="field" id="field-login-password">
+          <label for="login-password">Password</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('login-password', this)" aria-label="Toggle password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align:right; margin-top:-10px; margin-bottom:16px;">
+          <a href="#" style="font-size:.8rem; color:var(--green-mid); font-family:'DM Mono',monospace; letter-spacing:.05em; text-decoration:none;">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary" id="btn-login" onclick="handleLogin()">
+          <span class="btn-text">Sign In</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="form-footer">
+          No account yet? <a onclick="switchTab('register')">Register for free</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backend integration note -->
+    <div class="backend-note">
+      <strong>⬡ BACKEND INTEGRATION — Node.js / Express + MongoDB</strong>
+      Connect to your API by replacing the mock handlers below.<br/>
+      <br/>
+      <strong>Register endpoint:</strong> <code>POST /api/auth/register</code><br/>
+      Body: <code>{ username, email, password }</code><br/>
+      → Hash password with <code>bcrypt</code>, save user to MongoDB.<br/>
+      <br/>
+      <strong>Login endpoint:</strong> <code>POST /api/auth/login</code><br/>
+      Body: <code>{ email, password }</code><br/>
+      → Verify hash, return <code>JWT</code> token.<br/>
+      <br/>
+      MongoDB schema example in <code>models/User.js</code> — see the README.
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── TAB SWITCHING ──
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      document.getElementById('panel-register').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('panel-login').classList.toggle('hidden', tab !== 'login');
+    }
+
+    // ── PASSWORD VISIBILITY ──
+    function togglePwd(id, btn) {
+      const inp = document.getElementById(id);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    // ── PASSWORD STRENGTH ──
+    const colors = ['#C0392B','#E67E22','#F1C40F','#1D9E75'];
+    const labels = ['Weak','Fair','Good','Strong'];
+    function checkStrength(val) {
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      for (let i = 1; i <= 4; i++) {
+        const seg = document.getElementById('s' + i);
+        seg.style.background = i <= score ? colors[score - 1] : 'var(--border)';
+      }
+      document.getElementById('strength-label').textContent = val.length ? labels[score - 1] || '' : '';
+    }
+
+    // ── TOAST ──
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '');
+      void t.offsetWidth;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    // ── VALIDATE ──
+    function setError(fieldId, errId, show) {
+      document.getElementById(fieldId).classList.toggle('has-error', show);
+      const inp = document.getElementById(fieldId).querySelector('input');
+      if (inp) inp.classList.toggle('invalid', show);
+    }
+
+    // ── REGISTER HANDLER ──
+    async function handleRegister() {
+      const username = document.getElementById('reg-username').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const agreed   = document.getElementById('agree').checked;
+
+      let valid = true;
+      setError('field-username', 'err-username', username.length < 3);
+      setError('field-email', 'err-email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+      setError('field-password', 'err-password', password.length < 8);
+      if (username.length < 3 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) valid = false;
+      if (!agreed) { showToast('Please agree to the Terms first.', true); return; }
+      if (!valid) return;
+
+      const btn = document.getElementById('btn-register');
+      btn.classList.add('loading');
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Registration failed');
+        showToast('Account created! Welcome, ' + username + ' 🎉');
+        setTimeout(() => switchTab('login'), 1800);
+      } catch (err) {
+        showToast(err.message || 'Something went wrong.', true);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // ── LOGIN HANDLER ──
+    async function handleLogin() {
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      if (!email || !password) { showToast('Please fill in all fields.', true); return; }
+
+      const btn = document.getElementById('btn-login');
+      btn.classList.add('loading');
+
+      try {
+      
+           const res = await fetch('/api/auth/login', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ email, password })
+           });
+           const data = await res.json();
+           if (!res.ok) throw new Error(data.message || 'Login failed');
+           localStorage.setItem('token', data.token);
+        showToast('Welcome back! Redirecting…');
+        setTimeout(() => window.location.href = '/dashboard.html', 1000);
+      } catch (err) {
+        showToast(err.message || 'Invalid credentials.', true);
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    // Allow Enter key
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const reg = !document.getElementById('panel-register').classList.contains('hidden');
+      reg ? handleRegister() : handleLogin();
+    });
+  </script>
+</body>
+</html>
