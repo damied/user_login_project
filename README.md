@@ -8,16 +8,9 @@ Live:
 
 ---
 
-## Screenshots
-
-| Node.js backend | Flask backend |
-|---|---|
-| ![Node login](screenshots/node-login.png) | ![Flask login](screenshots/flask-login.png) |
-| ![Node dashboard](screenshots/node-dashboard.png) | ![Flask dashboard](screenshots/flask-dashboard.png) |
+Both backends serve the same styled register/login page and a dashboard showing the logged-in user's account details.
 
 ---
-
-## Architecture
 
 ## Architecture
 
@@ -75,13 +68,13 @@ Both backends implement the same REST contract and share the same database, so a
 │       ├── index.html         # register/login page
 │       └── dashboard.html
 │
-└── flask_project/             # Flask backend
-    ├── app.py
-    ├── requirements.txt
-    ├── ecosystem.config.js
-    └── public/
-        ├── index.html
-        └── dashboard.html
+├── flask_project/             # Flask backend
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── ecosystem.config.js
+│   └── public/
+│       ├── index.html
+│       └── dashboard.html
 ```
 
 ---
@@ -106,7 +99,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Both apps read `MONGO_URI` and `JWT_SECRET` from `.env` — use the **same values** for both if you want sessions to be portable between them.
+Both apps read `MONGO_URI` and `JWT_SECRET` from `.env` — use the same values for both if you want sessions to be portable between them.
 
 ---
 
@@ -134,6 +127,7 @@ www   A    <EC2_PUBLIC_IP>
 ```
 
 ### 4. Nginx — hostname-based routing
+
 Two independent `server` blocks, split by `server_name`, each proxying to a different local port:
 
 ```nginx
@@ -185,7 +179,7 @@ server {
 }
 ```
 
-Backend ports (4000, 5000) are **never opened in the security group** — they're only reachable via Nginx on the loopback interface. The only public entry points are 80/443.
+Backend ports (4000, 5000) are never opened in the security group — they're only reachable via Nginx on the loopback interface. The only public entry points are 80/443.
 
 ### 5. TLS
 ```bash
@@ -199,7 +193,7 @@ Certbot auto-configures the Nginx SSL block and schedules renewal (certs are val
 
 ## Key Design Decisions
 
-- **Hostname-based routing, not path-based.** Both backends implement the *same* API — path-based routing (`/flask/...`) would collide on identical routes and leak implementation details into URLs. Splitting by hostname keeps each backend's URL space clean.
+- **Hostname-based routing, not path-based.** Both backends implement the same API — path-based routing (`/flask/...`) would collide on identical routes and leak implementation details into URLs. Splitting by hostname keeps each backend's URL space clean.
 - **Gunicorn over Flask's dev server.** Flask's built-in server is explicitly unsafe for production (single-threaded, debugger exposes remote code execution risk). Gunicorn + PM2 mirrors the same "process manager in front of the app, Nginx never talks to a dev server" pattern used for the Node side.
 - **PM2 for both languages.** One consistent operational surface (`pm2 status`, `pm2 logs`, `pm2 startup`) instead of separate tooling per language.
 - **Let's Encrypt over ACM.** ACM certificates only integrate with AWS-managed services (ALB, CloudFront, API Gateway) — they cannot be installed directly on an EC2/Nginx box. An ALB was intentionally avoided here since it adds cost/complexity with no benefit for a single-instance deployment; Certbot's free, auto-renewing certs are the standard choice at this scale.
@@ -220,8 +214,8 @@ Certbot auto-configures the Nginx SSL block and schedules renewal (certs are val
 ## Security Notes
 
 - Passwords are hashed with `bcrypt` (12 rounds) — never stored in plaintext.
-- JWTs are signed with a 256-bit random secret (`crypto.randomBytes(32)`), 7-day expiry.
-- `.env` files (containing `MONGO_URI` and `JWT_SECRET`) are gitignored and **never committed**.
+- JWTs are signed with a 256-bit random secret, 7-day expiry.
+- `.env` files (containing `MONGO_URI` and `JWT_SECRET`) are gitignored and never committed.
 - Both app ports (4000, 5000) are bound to `127.0.0.1` / not exposed in the security group — Nginx is the only public-facing surface.
 
 **Before deploying this yourself:** generate your own `JWT_SECRET` and use your own MongoDB Atlas credentials. Never reuse the example values in this repo.
