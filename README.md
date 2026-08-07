@@ -222,9 +222,11 @@ Certbot auto-configures the Nginx SSL block and schedules renewal (certs are val
 
 ---
 
-## Next Steps
+## Production Hardening Considerations
 
-- [ ] Rate-limit `/api/auth/login` to mitigate brute-force attempts
-- [ ] Move shared secrets into a centralized secrets manager (e.g. AWS Secrets Manager) instead of duplicated `.env` files
-- [ ] Add structured logging / basic monitoring (e.g. PM2 log rotation, uptime checks)
-- [ ] Evaluate ALB + ACM if a second instance is added for redundancy
+This project prioritized demonstrating a complete, working deployment pipeline end-to-end. A few items were deliberately left out of scope but would be part of hardening this for real production traffic:
+
+- **Rate limiting** on `/api/auth/login` to mitigate brute-force attempts
+- **Centralized secrets management** (e.g. AWS Secrets Manager) instead of per-app `.env` files
+- **Structured logging / monitoring** (e.g. PM2 log rotation, uptime checks, alerting)
+- **Load balancing** (ALB + ACM) if a second instance is added for redundancy
